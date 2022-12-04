@@ -1,6 +1,8 @@
 import pandas
 import matplotlib.pyplot as plt
 import statistics
+import numpy as np
+
 
 ''' 
 The following is the starting code for path1 for data reading to make your first step easier.
@@ -34,6 +36,13 @@ def overall_traffic():
     print('William Bridge     ', bridges_traffic[2], '        ', int(bridges_traffic[2] / 214))
     print('Queensboro Bridge  ', bridges_traffic[3], '         ', int(bridges_traffic[3] / 214))
 
+    all_traffic_sum = (bridges_traffic[0] + bridges_traffic[1] + bridges_traffic[2] + bridges_traffic[3])
+
+    print("\nBrooklyn Traffic Contribution: ", (bridges_traffic[0] / all_traffic_sum * 100))
+    print("Manhattan Traffic Contribution: ", (bridges_traffic[1] / all_traffic_sum * 100))
+    print("William Traffic Contribution: ", (bridges_traffic[2] / all_traffic_sum * 100))
+    print("Queensboro Traffic Contribution: ", (bridges_traffic[3] / all_traffic_sum * 100))
+
     plt.plot(bridge_data[0])
     plt.plot(bridge_data[1])
     plt.plot(bridge_data[2])
@@ -53,36 +62,39 @@ def traffic_prediction():
     #  (low/high temperature and precipitation) to predict the total number of bicyclists that day?
 
     temp_average = [0] * 214
-    peak_degrees = 0
-    peak_precipitation = 0
     i = 0
+    peak_precipitation = []
+
     while i < 214:
         temp_average[i] = (temp_high[i] + temp_low[i]) / 2
-        if 72 < temp_average[i] < 82:
-            peak_degrees += total_traffic[i]
         if precipitation[i] == 0:
-            peak_precipitation += total_traffic[i]
+            peak_precipitation.append(total_traffic[i])
         i += 1
 
-    percent_precip = int((peak_precipitation / sum(total_traffic)) * 100)
-    percent_temp = int((peak_degrees / sum(total_traffic)) * 100)
+    z = np.polyfit(temp_average, total_traffic, 2)
+    predict = np.poly1d(z)
 
-    print('')
-    print(percent_temp, "percent of the traffic is within", int(10 / (max(temp_average) - min(temp_average)) * 100),
-          "percent of the temperature between 72 - 82 degrees")
+    corr_matrix = np.corrcoef(temp_average, predict(temp_average))
+    corr = corr_matrix[0, 1]
+    R_sq = corr ** 2
+    print(R_sq)
+
+    percent_precip = int((sum(peak_precipitation) / sum(total_traffic)) * 100)
     print(percent_precip, "percent of the traffic is at 0 precipitation")
+
+    print("Standard Deviation :", (statistics.stdev(peak_precipitation)))
 
     plt.plot(temp_average, total_traffic, 'o')
     plt.title("Temperature and Total Traffic Comparison")
     plt.ylabel('Total Traffic')
-    plt.xlabel('Average Temperature')
+    plt.xlabel('Average Temperature (Fahrenheit)')
     plt.legend(['Data'])
     plt.show()
 
     plt.plot(precipitation, total_traffic, 'o')
     plt.title("Precipitation and Total Traffic Comparison")
     plt.ylabel('Total Traffic')
-    plt.xlabel('Precipitation')
+    plt.xlabel('Precipitation (inches)')
     plt.legend(['Data'])
     plt.show()
 
@@ -166,10 +178,11 @@ def day_prediction():
     plt.show()
 
     plt.plot(tuesday, 'o')
-    plt.title("Total Traffic on Tuesday")
+    plt.plot(thursday, 'o')
+    plt.title("Total Traffic on Tuesday and Wednesday")
     plt.ylabel('Traffic')
     plt.xlabel('Days')
-    plt.legend(['Tuesday'])
+    plt.legend(['Tuesday', 'Thursday'])
     plt.show()
     return
 
@@ -186,6 +199,8 @@ if __name__ == "__main__":
     overall_traffic()
     traffic_prediction()
     day_prediction()
+
+    #Newest
 
 
 
