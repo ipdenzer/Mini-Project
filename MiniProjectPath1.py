@@ -98,6 +98,19 @@ def traffic_prediction():
     plt.legend(['Data'])
     plt.show()
 
+    fig, ax = plt.subplots(figsize=(12, 5))
+    ax2 = ax.twinx()
+    ax.set_title('Precipitation and Temperature vs Total Traffic')
+    ax.set_xlabel('Total Traffic')
+    ax.plot(total_traffic, precipitation, 'o', color='red')
+    ax2.plot(total_traffic, temp_average, 'o')
+    ax.set_ylabel('Precipitation (inches)')
+    ax2.set_ylabel('Average Temperature (Fahrenheit)')
+    ax.legend(['Precipitation', 'Temperature'])
+    ax2.legend(['Temperature'], loc='upper center')
+
+    plt.show()
+
     return
 
 
@@ -200,7 +213,7 @@ if __name__ == "__main__":
     traffic_prediction()
     day_prediction()
 
-    #Newest
+    #Newester
 
 
 
